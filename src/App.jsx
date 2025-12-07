@@ -206,7 +206,7 @@ function App() {
       setCurrentGuess('')
       setGameStatus('playing')
       setLoadError('')
-    } catch (err) {
+    } catch {
       setLoadError('Could not decode puzzle link. Double-check that the URL is complete.')
       setPuzzle(null)
     }
@@ -214,6 +214,24 @@ function App() {
 
   const handleCreateChange = (field, value) => {
     setCreateForm((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const buildShareBase = () => {
+    try {
+      const current = new URL(window.location.href)
+      const derived = `${current.origin}${current.pathname}`
+      if (derived) return derived
+    } catch {
+      // Ignore parse errors and fall back below
+    }
+
+    const hrefBase = (window.location?.href || '').split('?')[0]
+    if (hrefBase) return hrefBase
+
+    const originPath = `${window.location.origin || ''}${window.location.pathname || ''}`
+    if (originPath) return originPath
+
+    return '/'
   }
 
   const handleGenerateLink = async () => {
@@ -236,11 +254,12 @@ function App() {
     }
     try {
       const encoded = await encryptPayload(payload)
-      const url = `${window.location.origin}${window.location.pathname}?d=${encoded}`
+      const base = buildShareBase()
+      const url = `${base}?d=${encoded}`
       setShareLink(url)
       setCopyStatus('')
       setToast('Link generated. Copy it to share!')
-    } catch (err) {
+    } catch {
       setToast('Encryption failed. Please try again.')
     }
   }
@@ -254,7 +273,7 @@ function App() {
       await navigator.clipboard.writeText(value)
       messageSetter('Copied!')
       setTimeout(() => messageSetter(''), 1500)
-    } catch (err) {
+    } catch {
       messageSetter('Copy failed')
     }
   }
@@ -311,6 +330,8 @@ function App() {
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
+    // handleKeyPress intentionally excluded because we want the existing dependencies to drive listener updates.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [puzzle, currentGuess, gameStatus, guesses, evaluations])
 
   const shareResult = () => {
