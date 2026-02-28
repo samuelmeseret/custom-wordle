@@ -1,16 +1,69 @@
-# React + Vite
+# Wordle Maker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A custom Wordle puzzle creator and player. Choose any secret word, set the number of allowed guesses, and add an optional title or hint — then share the puzzle as a single URL. The word is **never** visible in the link; it is encrypted client-side with AES-GCM before being embedded in the URL.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 🔤 **Custom word length** — any word from 3 to 25 letters
+- 🔒 **Client-side encryption** — the secret word is AES-GCM encrypted; the URL contains only ciphertext
+- 🎯 **Configurable guesses** — set 1–12 allowed guesses per puzzle
+- 💡 **Title & hint** — optionally attach a title or hint that players see before guessing
+- 📋 **Share results** — copy a spoiler-free emoji grid to share your solve
+- 🌗 **Dark / light theme** — toggle persisted across visits
+- 📱 **On-screen keyboard** — colour-coded key states (correct / present / absent)
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- [React 19](https://react.dev/) with [Vite](https://vite.dev/)
+- [Web Crypto API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API) — AES-GCM encryption, no server required
+- [Vercel](https://vercel.com/) — hosting and analytics
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Prerequisites
+
+- Node.js 18+
+- npm
+
+### Install & run
+
+```bash
+npm install
+npm run dev
+```
+
+The app will be available at `http://localhost:5173`.
+
+### Build for production
+
+```bash
+npm run build
+npm run preview   # preview the production build locally
+```
+
+## Environment Variables
+
+| Variable | Description | Default |
+|---|---|---|
+| `VITE_APP_AES_KEY` | Base64-encoded 32-byte AES key used to encrypt puzzle URLs | A built-in dev key (replace in production) |
+
+Create a `.env.local` file in the project root to override the default key:
+
+```env
+VITE_APP_AES_KEY=<your-base64-encoded-32-byte-key>
+```
+
+> **Note:** The default key is public and intended for local development only. Generate a unique key for any publicly deployed instance.
+
+## Usage
+
+1. **Create a puzzle** — click **Make your own puzzle**, enter a secret word, adjust the settings, then click **Generate link**.
+2. **Share the link** — copy the generated URL and send it to whoever you want to challenge.
+3. **Play** — open the link in a browser. The board and keyboard appear automatically. Type guesses with the keyboard or use the on-screen keys.
+4. **Share your result** — after winning, click **Share result** to copy an emoji grid to your clipboard.
+
+## Linting
+
+```bash
+npm run lint
+```
